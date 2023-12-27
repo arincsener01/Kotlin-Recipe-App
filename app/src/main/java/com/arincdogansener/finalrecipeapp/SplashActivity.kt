@@ -2,11 +2,14 @@ package com.arincdogansener.finalrecipeapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.arincdogansener.finalrecipeapp.database.RecipeDatabase
 import com.arincdogansener.finalrecipeapp.databinding.ActivitySplashBinding
 import com.arincdogansener.finalrecipeapp.entities.Category
+import com.arincdogansener.finalrecipeapp.entities.Meal
+import com.arincdogansener.finalrecipeapp.entities.MealsItems
 import com.arincdogansener.finalrecipeapp.interfaces.GetDataService
 import com.arincdogansener.finalrecipeapp.retrofitclient.RetrofitClientInstance
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +46,9 @@ class SplashActivity : BaseActivity(), EasyPermissions.RationaleCallbacks, EasyP
                 call: Call<Category>,
                 response: Response<Category>
             ) {
+                for (arr in response.body()!!.categoryitems!!) {
+                    getMeal(arr.strCategory)
+                }
                 insertDataIntoRoomDb(response.body())
             }
 
@@ -54,15 +60,71 @@ class SplashActivity : BaseActivity(), EasyPermissions.RationaleCallbacks, EasyP
         })
     }
 
+    fun getMeal(categoryName: String) {
+        val service = RetrofitClientInstance.retrofitInstance!!.create(GetDataService::class.java)
+        val call = service.getMealList(categoryName)
+        call.enqueue(object : Callback<Meal> {
+            override fun onFailure(call: Call<Meal>, t: Throwable) {
+
+                binding.loader.visibility = View.INVISIBLE
+                Toast.makeText(this@SplashActivity, "Something went wrong", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            override fun onResponse(
+                call: Call<Meal>,
+                response: Response<Meal>
+            ) {
+
+                insertMealDataIntoRoomDb(categoryName, response.body())
+            }
+
+        })
+    }
+
     fun insertDataIntoRoomDb(category: Category?){
         launch {
             this.let {
-                RecipeDatabase.getDatabase(this@SplashActivity).recipeDao().clearDb()
+
                 for (arr in category!!.categoryitems!!){
                     RecipeDatabase.getDatabase(this@SplashActivity)
                         .recipeDao().insertCategory(arr)
                 }
+                //binding.btnGetStarted.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    fun insertMealDataIntoRoomDb(categoryName: String, meal: Meal?) {
+
+        launch {
+            this.let {
+
+
+                for (arr in meal!!.mealsItem!!) {
+                    var mealItemModel = MealsItems(
+                        arr.id,
+                        arr.idMeal,
+                        categoryName,
+                        arr.strMeal,
+                        arr.strMealThumb
+                    )
+                    RecipeDatabase.getDatabase(this@SplashActivity)
+                        .recipeDao().insertMeal(mealItemModel)
+                    Log.d("mealData", arr.toString())
+                }
+
                 binding.btnGetStarted.visibility = View.VISIBLE
+            }
+        }
+
+
+    }
+
+    fun clearDataBase() {
+        launch {
+            this.let {
+                RecipeDatabase.getDatabase(this@SplashActivity).recipeDao().clearDb()
             }
         }
     }
@@ -73,6 +135,7 @@ class SplashActivity : BaseActivity(), EasyPermissions.RationaleCallbacks, EasyP
 
     private fun readStorageTask() {
         if (hasReadStoragePermission()) {
+            clearDataBase()
             getCategories()
         }
         else{

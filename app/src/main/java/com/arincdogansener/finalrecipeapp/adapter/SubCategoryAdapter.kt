@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.arincdogansener.finalrecipeapp.R
 import com.arincdogansener.finalrecipeapp.R.layout.item_rv_main_category
@@ -11,17 +12,20 @@ import com.arincdogansener.finalrecipeapp.entities.Recipies
 import com.bumptech.glide.Glide
 import android.widget.TextView
 import com.arincdogansener.finalrecipeapp.R.layout.item_rv_sub_category
+import com.arincdogansener.finalrecipeapp.entities.MealsItems
 
 class SubCategoryAdapter:RecyclerView.Adapter<SubCategoryAdapter.RecipeViewHolder>() {
-    var arrSubCategory = ArrayList<Recipies>()
+    var arrSubCategory = ArrayList<MealsItems>()
+    var ctx: Context? = null
     class RecipeViewHolder(view: View): RecyclerView.ViewHolder(view){
     }
 
-    fun setData(arrData : List<Recipies>){
-        arrSubCategory = arrData as ArrayList<Recipies>
+    fun setData(arrData : List<MealsItems>){
+        arrSubCategory = arrData as ArrayList<MealsItems>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
+        ctx = parent.context
         return RecipeViewHolder(LayoutInflater.from(parent.context).inflate(item_rv_sub_category,parent,false))
     }
 
@@ -31,6 +35,8 @@ class SubCategoryAdapter:RecyclerView.Adapter<SubCategoryAdapter.RecipeViewHolde
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val dishNameTextView = holder.itemView.findViewById<TextView>(R.id.tv_dish_name)
-        dishNameTextView.text = arrSubCategory[position].dishName
+        val dishImage = holder.itemView.findViewById<ImageView>(R.id.img_dish)
+        dishNameTextView.text = arrSubCategory[position].strMeal
+        Glide.with(ctx!!).load(arrSubCategory[position].strMealThumb).into(dishImage)
     }
 }
