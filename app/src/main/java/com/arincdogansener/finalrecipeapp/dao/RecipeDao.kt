@@ -13,11 +13,11 @@ import com.arincdogansener.finalrecipeapp.entities.Recipies
 @Dao
 interface RecipeDao {
 
-    @Query("SELECT * FROM category ORDER BY id DESC")
+    @Query("SELECT * FROM categoryitems ORDER BY id DESC")
     suspend fun getAllCategory(): List<CategoryItems>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCategory(categoryItems: CategoryItems)
+    suspend fun insertCategory(categoryItems: CategoryItems?)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMeal(mealsItems: MealsItems?)

@@ -14,7 +14,7 @@ import com.arincdogansener.finalrecipeapp.entities.Recipies
 import com.arincdogansener.finalrecipeapp.entities.converter.CategoryListConverter
 import com.arincdogansener.finalrecipeapp.entities.converter.MealListConverter
 
-@Database(entities = [Recipies::class, CategoryItems::class, Category::class, CategoryListConverter::class, Meal::class, MealsItems::class], version = 1, exportSchema = false)
+@Database(entities = [Recipies::class, CategoryItems::class, Category::class, Meal::class, MealsItems::class], version = 1, exportSchema = false)
 @TypeConverters(CategoryListConverter::class, MealListConverter::class)
 abstract class RecipeDatabase: RoomDatabase() {
 

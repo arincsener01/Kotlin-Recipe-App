@@ -19,16 +19,16 @@ import retrofit2.create
 import kotlin.coroutines.CoroutineContext
 
 open class BaseActivity : AppCompatActivity(), CoroutineScope {
-    private lateinit var binding : ActivitySplashBinding
+    //private lateinit var binding : ActivityBaseBinding
     private lateinit var job: Job
     override val coroutineContext:CoroutineContext
         get() = job + Dispatchers.Main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySplashBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+//        binding = ActivitySplashBinding.inflate(layoutInflater)
+//        val view = binding.root
+//        setContentView(view)
 
         job = Job()
     }
